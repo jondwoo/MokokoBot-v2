@@ -41,6 +41,12 @@ const commands = new SlashCommandBuilder()
             { name: "Saturday", value: "Saturday" }
           )
       )
+      .addIntegerOption((option) =>
+        option
+          .setName("amount")
+          .setDescription("amount of times you need to run")
+          .setRequired(true)
+      )
   );
 
 export default commands;

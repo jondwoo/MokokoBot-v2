@@ -31,9 +31,8 @@ export async function autocomplete(interaction) {
               { name: "Hard", value: "Hard" },
             ];
             break;
-          case "Kuku":
+          case "Kakul":
             choices = [{ name: "Normal", value: "Normal" }];
-
             break;
           default:
             break;
@@ -82,6 +81,7 @@ export async function execute(interaction) {
       const boss = interaction.options.getString("boss");
       const mode = interaction.options.getString("mode");
       const weekDay = interaction.options.getString("when");
+      const amount = interaction.options.getInteger("amount");
 
       // // inside a command, event listener, etc.
       // const bossEmbed = new EmbedBuilder()
@@ -109,7 +109,7 @@ export async function execute(interaction) {
       //   files: ["./assets/valtan.jpeg"],
       // });
       await interaction.reply({
-        content: `Joined ${boss} ${mode} for ${weekDay}`,
+        content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} runs`,
         ephemeral: true,
       });
       break;
