@@ -21,7 +21,7 @@ model Mode {
     level    String
     raidMode RaidMode[]
     raid     Raid?      @relation(fields: [raidId], references: [id])
-    raidId   String?
+    raidId   String?    @unique
 }
 
 model RaidMode {

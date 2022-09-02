@@ -1,5 +1,4 @@
-import { EmbedBuilder } from "discord.js";
-
+import updateFields from "../util/updateFields.js";
 import commands from "./data/join/raid.js";
 
 export const data = commands;
@@ -52,29 +51,28 @@ export async function autocomplete(interaction) {
   }
 }
 
-// ideal template
-// const bossEmbed = new EmbedBuilder()
-//   .setColor(0x0099ff)
-//   .setTitle("**Valtan**")
-//   .addFields(
-//     {
-//       name: "__**Normal Mode**__",
-//       value:
-//         "**Sunday**:\n > rome\n > ema\n\n" +
-//         "**Monday**:\n > angie\n > tofu\n",
-//       inline: true,
-//     },
-//     {
-//       name: "__**Hard Mode**__",
-//       value: "**Friday**:\n > rome\n > ema\n > charlie",
-//       inline: true,
-//     }
-//   )
-//   .setImage("attachment://valtan.jpeg");
-
 export async function execute(interaction, prisma) {
-  const channel = interaction.channel;
   const subCommand = interaction.options.getSubcommand();
+
+  const getEmbedMessage = async (boss) => {
+    const raid = await prisma.raid.findUnique({
+      where: {
+        name: boss,
+      },
+    });
+
+    const embedMessage = await prisma.embedMessage.findUnique({
+      where: {
+        raidId: raid.id,
+      },
+    });
+
+    const { id, channelId } = embedMessage;
+
+    return await interaction.client.channels.cache
+      .get(channelId)
+      .messages.fetch(id);
+  };
 
   switch (subCommand) {
     case "raid": {
@@ -83,106 +81,105 @@ export async function execute(interaction, prisma) {
       const weekDay = interaction.options.getString("when");
       const amount = interaction.options.getInteger("amount");
 
-      // // inside a command, event listener, etc.
-      // const bossEmbed = new EmbedBuilder()
-      //   .setColor(0x0099ff)
-      //   .setTitle("Valtan")
-      //   .addFields(
-      //     { name: "Regular field title", value: "Some value here" },
-      //     { name: "\u200B", value: "\u200B" },
-      //     {
-      //       name: "Inline field title",
-      //       value: "Some value here",
-      //       inline: true,
-      //     },
-      //     { name: "Inline field title", value: "Some value here", inline: true }
-      //   )
-      //   .addFields({
-      //     name: "Inline field title",
-      //     value: "Some value here",
-      //     inline: true,
-      //   })
-      //   .setImage("attachment://valtan.jpeg");
-      //
-      // channel.send({
-      //   embeds: [bossEmbed],
-      //   files: ["./assets/valtan.jpeg"],
-      // });
-
-      await prisma.user.upsert({
+      const user = await prisma.user.upsert({
         where: { id: interaction.user.id },
         update: {
           username: interaction.user.username,
-          userRaid: {
-            create: {
-              when: weekDay,
-              amount,
-              raidName: {
-                connect: {
-                  name: boss,
-                },
-              },
-              raidMode: {
-                create: {
-                  raidName: {
-                    connect: {
-                      name: boss,
-                    },
-                  },
-                  mode: {
-                    create: {
-                      level: mode,
-                      raid: {
-                        connect: {
-                          name: boss,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
         },
         create: {
           id: interaction.user.id,
           guildId: interaction.guildId,
           username: interaction.user.username,
-          userRaid: {
-            create: {
-              when: weekDay,
-              amount,
-              raidName: {
-                connect: {
-                  name: boss,
-                },
-              },
-              raidMode: {
-                create: {
-                  raidName: {
-                    connect: {
-                      name: boss,
-                    },
-                  },
-                  mode: {
-                    create: {
-                      level: mode,
-                      raid: {
-                        connect: {
-                          name: boss,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
         },
       });
 
+      // const user = await prisma.user.upsert({
+      //   where: { id: interaction.user.id },
+      //   update: {
+      //     username: interaction.user.username,
+      //     userRaid: {
+      //       create: {
+      //         when: weekDay,
+      //         amount,
+      //         raidName: {
+      //           connect: {
+      //             name: boss,
+      //           },
+      //         },
+      //         raidMode: {
+      //           create: {
+      //             raidName: {
+      //               connect: {
+      //                 name: boss,
+      //               },
+      //             },
+      //             mode: {
+      //               create: {
+      //                 level: mode,
+      //                 raid: {
+      //                   connect: {
+      //                     name: boss,
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   create: {
+      //     id: interaction.user.id,
+      //     guildId: interaction.guildId,
+      //     username: interaction.user.username,
+      //     userRaid: {
+      //       create: {
+      //         when: weekDay,
+      //         amount,
+      //         raidName: {
+      //           connect: {
+      //             name: boss,
+      //           },
+      //         },
+      //         raidMode: {
+      //           create: {
+      //             raidName: {
+      //               connect: {
+      //                 name: boss,
+      //               },
+      //             },
+      //             mode: {
+      //               create: {
+      //                 level: mode,
+      //                 raid: {
+      //                   connect: {
+      //                     name: boss,
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
+
+      const message = await getEmbedMessage(boss);
+      await updateFields(
+        prisma,
+        boss,
+        weekDay,
+        user.username,
+        amount,
+        mode,
+        message
+      );
+
+      message.edit({ embeds: [message.embeds[0]], files: [] });
+
       await interaction.reply({
-        content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} runs`,
+        content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} run(s)`,
         ephemeral: true,
       });
       break;
