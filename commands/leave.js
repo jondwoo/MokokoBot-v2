@@ -1,5 +1,5 @@
 import { createEmbed, getEmbedMessage, updateFields } from "../util/index.js";
-import commands from "./data/join/raid.js";
+import commands from "./data/leave/raid.js";
 
 export const data = commands;
 
@@ -61,57 +61,27 @@ export async function execute(interaction, prisma) {
       const boss = interaction.options.getString("boss");
       const mode = interaction.options.getString("mode");
       const weekDay = interaction.options.getString("when");
-      const amount = interaction.options.getInteger("amount");
+
+      const message = await getEmbedMessage(boss, prisma, interaction);
+      const newEmbed = createEmbed(boss);
+
+      const raid = await prisma.raid.findUnique({
+        where: {
+          name: boss,
+        },
+      });
 
       try {
-        const user = await prisma.user.upsert({
-          where: { id: interaction.user.id },
-          update: {
-            username: interaction.user.username,
-          },
-          create: {
-            id: interaction.user.id,
-            guildId: interaction.guildId,
-            username: interaction.user.username,
-          },
-        });
-
-        const raid = await prisma.raid.findUnique({
-          where: {
-            name: boss,
-          },
-        });
-
-        await prisma.userRaid.upsert({
+        await prisma.userRaid.delete({
           where: {
             userId_when_raidId_raidMode: {
-              userId: user.id,
+              userId: interaction.user.id,
               when: weekDay,
               raidId: raid.id,
               raidMode: mode,
             },
           },
-          update: {},
-          create: {
-            when: weekDay,
-            amount,
-            raidName: {
-              connect: {
-                name: boss,
-              },
-            },
-            user: {
-              connect: {
-                id: user.id,
-              },
-            },
-            raidMode: mode,
-          },
         });
-
-        const message = await getEmbedMessage(boss, prisma, interaction);
-        const newEmbed = createEmbed(boss);
-
         await updateFields(prisma, boss, newEmbed);
 
         const files = newEmbed.files;
@@ -121,15 +91,16 @@ export async function execute(interaction, prisma) {
         });
 
         await interaction.editReply({
-          content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} run(s)`,
+          content: `Left ${boss} ${mode} on ${weekDay}`,
           ephemeral: true,
         });
       } catch (error) {
         await interaction.editReply({
-          content: "Something went wrong. Please try again later",
+          content: "You are not in this raid",
           ephemeral: true,
         });
       }
+
       break;
     }
     default:

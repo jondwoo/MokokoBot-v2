@@ -70,13 +70,15 @@ const updateFields = async (prisma, boss, newEmbed) => {
 
   for (const mode of modeMap.keys()) {
     newEmbedFields.push({
-      name: `**${mode}**`,
+      name: `**${mode} Mode**`,
       value: modeMap.get(mode),
       inline: true,
     });
   }
 
-  newEmbed.embed.data.fields = newEmbedFields;
+  if (newEmbedFields.length) {
+    newEmbed.embed.data.fields = newEmbedFields;
+  }
 };
 
 export default updateFields;

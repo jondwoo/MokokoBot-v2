@@ -17,28 +17,36 @@ export async function execute(interaction, prisma) {
         files,
       });
 
-      await prisma.embedMessage.upsert({
-        where: { id: message.id },
-        update: {
-          id: message.id,
-          channelId: message.channelId,
-          createdAt: new Date().toISOString(),
-        },
-        create: {
-          id: message.id,
-          channelId: message.channelId,
-          raidName: {
-            create: {
-              name: boss,
+      try {
+        await prisma.embedMessage.upsert({
+          where: { id: message.id },
+          update: {
+            id: message.id,
+            channelId: message.channelId,
+            createdAt: new Date().toISOString(),
+          },
+          create: {
+            id: message.id,
+            channelId: message.channelId,
+            raidName: {
+              create: {
+                name: boss,
+              },
             },
           },
-        },
-      });
+        });
 
-      await interaction.reply({
-        content: `Created ${boss} raid event`,
-        ephemeral: true,
-      });
+        await interaction.reply({
+          content: `Created ${boss} raid event`,
+          ephemeral: true,
+        });
+      } catch (error) {
+        await interaction.reply({
+          content: "Something went wrong. Please try again later",
+          ephemeral: true,
+        });
+      }
+
       break;
     }
     default:
