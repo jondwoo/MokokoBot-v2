@@ -1,5 +1,3 @@
-import { AttachmentBuilder, EmbedBuilder } from "discord.js";
-
 import { createEmbed, getEmbedMessage, updateFields } from "../util/index.js";
 import commands from "./data/join/raid.js";
 
@@ -58,6 +56,8 @@ export async function execute(interaction, prisma) {
 
   switch (subCommand) {
     case "raid": {
+      await interaction.deferReply({ ephemeral: true });
+
       const boss = interaction.options.getString("boss");
       const mode = interaction.options.getString("mode");
       const weekDay = interaction.options.getString("when");
@@ -81,7 +81,7 @@ export async function execute(interaction, prisma) {
         },
       });
 
-      const userRaid = await prisma.userRaid.upsert({
+      await prisma.userRaid.upsert({
         where: {
           userId_when_raidId_raidMode: {
             userId: user.id,
@@ -119,7 +119,7 @@ export async function execute(interaction, prisma) {
         files,
       });
 
-      await interaction.reply({
+      await interaction.editReply({
         content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} run(s)`,
         ephemeral: true,
       });

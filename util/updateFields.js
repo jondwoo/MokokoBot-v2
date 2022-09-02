@@ -12,6 +12,7 @@ const updateFields = async (prisma, boss, newEmbed) => {
     },
     include: {
       user: true,
+      raidName: true,
     },
   });
 
@@ -36,6 +37,11 @@ const updateFields = async (prisma, boss, newEmbed) => {
         where: {
           when: weekDay,
           raidMode: mode,
+          raidName: {
+            is: {
+              name: boss,
+            },
+          },
         },
         include: {
           user: true,
