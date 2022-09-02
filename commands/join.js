@@ -61,6 +61,7 @@ export async function execute(interaction) {
     case "raid": {
       const boss = interaction.options.getString("boss");
       const mode = interaction.options.getString("mode");
+      const weekDay = interaction.options.getString("when");
 
       // // inside a command, event listener, etc.
       // const bossEmbed = new EmbedBuilder()
@@ -88,7 +89,7 @@ export async function execute(interaction) {
       //   files: ["./assets/valtan.jpeg"],
       // });
       await interaction.reply({
-        content: `Joined ${boss} ${mode} raid event`,
+        content: `Joined ${boss} ${mode} for ${weekDay}`,
         ephemeral: true,
       });
       break;

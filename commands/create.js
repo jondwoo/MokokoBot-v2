@@ -15,22 +15,21 @@ export async function execute(interaction) {
       // inside a command, event listener, etc.
       const bossEmbed = new EmbedBuilder()
         .setColor(0x0099ff)
-        .setTitle("Valtan")
+        .setTitle("**Valtan**")
         .addFields(
-          { name: "Regular field title", value: "Some value here" },
-          { name: "\u200B", value: "\u200B" },
           {
-            name: "Inline field title",
-            value: "Some value here",
+            name: "__**Normal Mode**__",
+            value:
+              "**Sunday**:\n > rome\n > ema\n\n" +
+              "**Monday**:\n > angie\n > tofu\n",
             inline: true,
           },
-          { name: "Inline field title", value: "Some value here", inline: true }
+          {
+            name: "__**Hard Mode**__",
+            value: "**Friday**:\n > rome\n > ema\n > charlie",
+            inline: true,
+          }
         )
-        .addFields({
-          name: "Inline field title",
-          value: "Some value here",
-          inline: true,
-        })
         .setImage("attachment://valtan.jpeg");
 
       channel.send({

@@ -26,6 +26,21 @@ const commands = new SlashCommandBuilder()
           .setRequired(true)
           .setAutocomplete(true)
       )
+      .addStringOption((option) =>
+        option
+          .setName("when")
+          .setDescription("Day of event")
+          .setRequired(true)
+          .addChoices(
+            { name: "Sunday", value: "Sunday" },
+            { name: "Monday", value: "Monday" },
+            { name: "Tuesday", value: "Tuesday" },
+            { name: "Wednesday", value: "Wednesday" },
+            { name: "Thursday", value: "Thursday" },
+            { name: "Friday", value: "Friday" },
+            { name: "Saturday", value: "Saturday" }
+          )
+      )
   );
 
 export default commands;
