@@ -7,7 +7,11 @@ import { fileURLToPath } from "url";
 
 // Create a new client instance
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+  ],
 });
 
 // Dynamically import commands
