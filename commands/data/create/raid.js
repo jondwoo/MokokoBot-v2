@@ -13,10 +13,10 @@ const commands = new SlashCommandBuilder()
           .setDescription("Name of raid boss")
           .setRequired(true)
           .addChoices(
-            { name: "Argos", value: "argos" },
-            { name: "Valtan", value: "valtan" },
-            { name: "Vykas", value: "vykas" },
-            { name: "Kuku", value: "kuku" }
+            { name: "Argos", value: "Argos" },
+            { name: "Valtan", value: "Valtan" },
+            { name: "Vykas", value: "Vykas" },
+            { name: "Kuku", value: "Kuku" }
           )
       )
   );
