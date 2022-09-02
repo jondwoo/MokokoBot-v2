@@ -17,7 +17,7 @@ export async function execute(interaction) {
       switch (boss) {
         case "Argos": {
           bossEmbed = new EmbedBuilder()
-            .setColor(0x0099ff)
+            .setColor(0x49ff61)
             .setTitle("**Argos**")
             .addFields({
               name: "__**Normal Mode**__",
@@ -32,7 +32,7 @@ export async function execute(interaction) {
 
         case "Valtan": {
           bossEmbed = new EmbedBuilder()
-            .setColor(0x0099ff)
+            .setColor(0x3e7bff)
             .setTitle("**Valtan**")
             .addFields(
               {
@@ -54,7 +54,7 @@ export async function execute(interaction) {
 
         case "Vykas": {
           bossEmbed = new EmbedBuilder()
-            .setColor(0x0099ff)
+            .setColor(0xf32626)
             .setTitle("**Vykas**")
             .addFields(
               {
@@ -76,7 +76,7 @@ export async function execute(interaction) {
 
         case "Kakul-Saydon": {
           bossEmbed = new EmbedBuilder()
-            .setColor(0x0099ff)
+            .setColor(0x9a2fff)
             .setTitle("**Kakul-Saydon**")
             .addFields({
               name: "__**Normal Mode**__",
