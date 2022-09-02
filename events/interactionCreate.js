@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { InteractionType } from "discord.js";
 
-// import { connect, connection } from "mongoose";
+import { prisma } from "../db/client.js";
 
 export const name = "interactionCreate";
 
@@ -12,8 +11,6 @@ export async function execute(interaction) {
     if (!command) return;
 
     try {
-      const prisma = new PrismaClient();
-
       await command.execute(interaction, prisma);
       await prisma.$disconnect();
     } catch (error) {

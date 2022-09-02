@@ -63,73 +63,66 @@ export async function execute(interaction, prisma) {
       const weekDay = interaction.options.getString("when");
       const amount = interaction.options.getInteger("amount");
 
-      try {
-        const user = await prisma.user.upsert({
-          where: { id: interaction.user.id },
-          update: {
-            username: interaction.user.username,
-          },
-          create: {
-            id: interaction.user.id,
-            guildId: interaction.guildId,
-            username: interaction.user.username,
-          },
-        });
+      const user = await prisma.user.upsert({
+        where: { id: interaction.user.id },
+        update: {
+          username: interaction.user.username,
+        },
+        create: {
+          id: interaction.user.id,
+          guildId: interaction.guildId,
+          username: interaction.user.username,
+        },
+      });
 
-        const raid = await prisma.raid.findUnique({
-          where: {
-            name: boss,
-          },
-        });
+      const raid = await prisma.raid.findUnique({
+        where: {
+          name: boss,
+        },
+      });
 
-        await prisma.userRaid.upsert({
-          where: {
-            userId_when_raidId_raidMode: {
-              userId: user.id,
-              when: weekDay,
-              raidId: raid.id,
-              raidMode: mode,
-            },
-          },
-          update: {},
-          create: {
+      await prisma.userRaid.upsert({
+        where: {
+          userId_when_raidId_raidMode: {
+            userId: user.id,
             when: weekDay,
-            amount,
-            raidName: {
-              connect: {
-                name: boss,
-              },
-            },
-            user: {
-              connect: {
-                id: user.id,
-              },
-            },
+            raidId: raid.id,
             raidMode: mode,
           },
-        });
+        },
+        update: {},
+        create: {
+          when: weekDay,
+          amount,
+          raidName: {
+            connect: {
+              name: boss,
+            },
+          },
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+          raidMode: mode,
+        },
+      });
 
-        const message = await getEmbedMessage(boss, prisma, interaction);
-        const newEmbed = createEmbed(boss);
+      const message = await getEmbedMessage(boss, prisma, interaction);
+      const newEmbed = createEmbed(boss);
 
-        await updateFields(prisma, boss, newEmbed);
+      await updateFields(prisma, boss, newEmbed);
 
-        const files = newEmbed.files;
-        await message.edit({
-          embeds: [newEmbed.embed],
-          files,
-        });
+      const files = newEmbed.files;
+      await message.edit({
+        embeds: [newEmbed.embed],
+        files,
+      });
 
-        await interaction.editReply({
-          content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} run(s)`,
-          ephemeral: true,
-        });
-      } catch (error) {
-        await interaction.editReply({
-          content: "Something went wrong. Please try again later",
-          ephemeral: true,
-        });
-      }
+      await interaction.editReply({
+        content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} run(s)`,
+        ephemeral: true,
+      });
       break;
     }
     default:
