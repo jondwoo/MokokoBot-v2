@@ -113,9 +113,10 @@ export async function execute(interaction, prisma) {
 
       await updateFields(prisma, boss, newEmbed);
 
+      const files = newEmbed.files;
       await message.edit({
-        embeds: [newEmbed],
-        files: [],
+        embeds: [newEmbed.embed],
+        files,
       });
 
       await interaction.reply({

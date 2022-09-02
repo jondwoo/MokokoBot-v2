@@ -15,7 +15,6 @@ const updateFields = async (prisma, boss, newEmbed) => {
     },
   });
 
-  // const newEmbedFieldsObj = {};
   // eslint-disable-next-line no-undef
   const modeMap = new Map();
 
@@ -49,7 +48,6 @@ const updateFields = async (prisma, boss, newEmbed) => {
       }));
 
       if (users.length) {
-        // const modeString = `**${mode}**`;
         const weekDayString = `__**${weekDay}**__:\n`;
         users.forEach((user) => {
           formattedUserStringList += `> ${user.username} x${user.amount}\n`;
@@ -57,11 +55,6 @@ const updateFields = async (prisma, boss, newEmbed) => {
 
         value += weekDayString + formattedUserStringList + "\n";
 
-        // newEmbedFieldsObj = {
-        //   ...newEmbedFields,
-        //   name: modeString,
-        //   value,
-        // };
         modeMap.set(mode, value);
       }
     });
@@ -70,7 +63,11 @@ const updateFields = async (prisma, boss, newEmbed) => {
   const newEmbedFields = [];
 
   for (const mode of modeMap.keys()) {
-    newEmbedFields.push(modeMap.get(mode));
+    newEmbedFields.push({
+      name: `**${mode}**`,
+      value: modeMap.get(mode),
+      inline: true,
+    });
   }
 
   newEmbed.embed.data.fields = newEmbedFields;
