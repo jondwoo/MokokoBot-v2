@@ -16,7 +16,7 @@ const commands = new SlashCommandBuilder()
             { name: "Argos", value: "Argos" },
             { name: "Valtan", value: "Valtan" },
             { name: "Vykas", value: "Vykas" },
-            { name: "Kuku", value: "Kuku" }
+            { name: "Kakul-Saydon", value: "Kakul-Saydon" }
           )
       )
   );
