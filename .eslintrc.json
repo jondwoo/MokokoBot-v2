@@ -10,11 +10,11 @@
   "env": {
     "node": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:prettier/recommended"
-  ],
+  "plugins": ["simple-import-sort"],
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
   "rules": {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
     "prefer-const": "error",
     "no-unused-vars": "warn",
     "padding-line-between-statements": [
