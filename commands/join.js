@@ -72,7 +72,7 @@ export async function autocomplete(interaction) {
 //   )
 //   .setImage("attachment://valtan.jpeg");
 
-export async function execute(interaction) {
+export async function execute(interaction, prisma) {
   const channel = interaction.channel;
   const subCommand = interaction.options.getSubcommand();
 
@@ -108,6 +108,79 @@ export async function execute(interaction) {
       //   embeds: [bossEmbed],
       //   files: ["./assets/valtan.jpeg"],
       // });
+
+      await prisma.user.upsert({
+        where: { id: interaction.user.id },
+        update: {
+          username: interaction.user.username,
+          userRaid: {
+            create: {
+              when: weekDay,
+              amount,
+              raidName: {
+                connect: {
+                  name: boss,
+                },
+              },
+              raidMode: {
+                create: {
+                  raidName: {
+                    connect: {
+                      name: boss,
+                    },
+                  },
+                  mode: {
+                    create: {
+                      level: mode,
+                      raid: {
+                        connect: {
+                          name: boss,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        create: {
+          id: interaction.user.id,
+          guildId: interaction.guildId,
+          username: interaction.user.username,
+          userRaid: {
+            create: {
+              when: weekDay,
+              amount,
+              raidName: {
+                connect: {
+                  name: boss,
+                },
+              },
+              raidMode: {
+                create: {
+                  raidName: {
+                    connect: {
+                      name: boss,
+                    },
+                  },
+                  mode: {
+                    create: {
+                      level: mode,
+                      raid: {
+                        connect: {
+                          name: boss,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
       await interaction.reply({
         content: `Joined ${boss} ${mode} on ${weekDay} for ${amount} runs`,
         ephemeral: true,

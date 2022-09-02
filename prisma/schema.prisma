@@ -8,36 +8,55 @@ datasource db {
 }
 
 model EmbedMessage {
-    id        String   @id @default(uuid())
-    msgId     String
-    raidName  String   @unique
+    id        String   @id
+    raidName  Raid     @relation(fields: [raidId], references: [id])
+    raidId    String   @unique
     channelId String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    title     String   @db.VarChar(255)
-    content   String?
-    published Boolean  @default(false)
-    author    User     @relation(fields: [authorId], references: [id])
-    authorId  Int
+model Mode {
+    id       String     @id @default(uuid())
+    level    String
+    raidMode RaidMode[]
+    raid     Raid?      @relation(fields: [raidId], references: [id])
+    raidId   String?
 }
 
-model Profile {
-    id     Int     @id @default(autoincrement())
-    bio    String?
-    user   User    @relation(fields: [userId], references: [id])
-    userId Int     @unique
+model RaidMode {
+    id       String     @id @default(uuid())
+    raidName Raid       @relation(fields: [raidId], references: [id])
+    raidId   String
+    mode     Mode       @relation(fields: [modeId], references: [id])
+    modeId   String
+    userRaid UserRaid[]
+}
+
+model Raid {
+    id           String        @id @default(uuid())
+    name         String        @unique
+    embedMessage EmbedMessage?
+    mode         Mode[]
+    userRaid     UserRaid[]
+    raidMode     RaidMode[]
+}
+
+model UserRaid {
+    id         String   @id @default(uuid())
+    when       String
+    amount     Int
+    raidName   Raid     @relation(fields: [raidId], references: [id])
+    raidId     String
+    raidMode   RaidMode @relation(fields: [raidModeId], references: [id])
+    raidModeId String
+    userId     String
+    user       User?    @relation(fields: [userId], references: [id])
 }
 
 model User {
-    id      Int      @id @default(autoincrement())
-    email   String   @unique
-    name    String?
-    posts   Post[]
-    profile Profile?
+    id       String     @id
+    guildId  String
+    username String
+    userRaid UserRaid[]
 }

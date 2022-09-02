@@ -97,18 +97,24 @@ export async function execute(interaction, prisma) {
         files,
       });
 
-      await prisma.embedMessage.upsert({
-        where: { raidName: boss },
+      await prisma.raid.upsert({
+        where: { name: boss },
         update: {
-          msgId: message.id,
-          channelId: message.channelId,
-          createdAt: new Date().toISOString(),
-          raidName: boss,
+          embedMessage: {
+            update: {
+              id: message.id,
+              createdAt: new Date().toISOString(),
+            },
+          },
         },
         create: {
-          msgId: message.id,
-          channelId: message.channelId,
-          raidName: boss,
+          name: boss,
+          embedMessage: {
+            create: {
+              id: message.id,
+              channelId: message.channelId,
+            },
+          },
         },
       });
 
