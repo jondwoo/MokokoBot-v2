@@ -16,42 +16,39 @@ model EmbedMessage {
     updatedAt DateTime @updatedAt
 }
 
-model Mode {
-    id       String     @id @default(uuid())
-    level    String
-    raidMode RaidMode[]
-    raid     Raid?      @relation(fields: [raidId], references: [id])
-    raidId   String?    @unique
-}
+// model Mode {
+//     id       String     @id @default(uuid())
+//     level    String
+//     raid     Raid?      @relation(fields: [raidId], references: [id])
+//     raidId   String?    @unique
+//     UserRaid UserRaid[]
+// }
 
-model RaidMode {
-    id       String     @id @default(uuid())
-    raidName Raid       @relation(fields: [raidId], references: [id])
-    raidId   String
-    mode     Mode       @relation(fields: [modeId], references: [id])
-    modeId   String
-    userRaid UserRaid[]
-}
+// model RaidMode {
+//     id       String @id @default(uuid())
+//     raidName Raid   @relation(fields: [raidId], references: [id])
+//     raidId   String
+//     modeId   String
+// }
 
 model Raid {
     id           String        @id @default(uuid())
     name         String        @unique
     embedMessage EmbedMessage?
-    mode         Mode[]
-    userRaid     UserRaid[]
-    raidMode     RaidMode[]
+    UserRaid     UserRaid[]
 }
 
 model UserRaid {
-    id         String   @id @default(uuid())
-    when       String
-    amount     Int
-    raidName   Raid     @relation(fields: [raidId], references: [id])
-    raidId     String
-    raidMode   RaidMode @relation(fields: [raidModeId], references: [id])
-    raidModeId String
-    userId     String
-    user       User?    @relation(fields: [userId], references: [id])
+    id       String @id @default(uuid())
+    when     String
+    amount   Int
+    raidName Raid   @relation(fields: [raidId], references: [id])
+    raidId   String
+    userId   String
+    user     User?  @relation(fields: [userId], references: [id])
+    raidMode String
+
+    @@unique([userId, when, raidId, raidMode])
 }
 
 model User {

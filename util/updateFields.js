@@ -1,15 +1,7 @@
 import pkg from "p-iteration";
-const { map } = pkg;
+const { forEach } = pkg;
 
-const updateFields = async (
-  prisma,
-  boss,
-  weekDay,
-  user,
-  amount,
-  mode,
-  message
-) => {
+const updateFields = async (prisma, boss, newEmbed) => {
   const userRaids = await prisma.userRaid.findMany({
     where: {
       raidName: {
@@ -17,35 +9,71 @@ const updateFields = async (
           name: boss,
         },
       },
-      when: weekDay,
+    },
+    include: {
+      user: true,
     },
   });
 
-  const stringBase = `**${weekDay}**:\n`;
-  let newString;
+  // const newEmbedFieldsObj = {};
+  // eslint-disable-next-line no-undef
+  const modeMap = new Map();
 
-  if (userRaids.length) {
-    const users = await map(userRaids, async (userRaid) => {
-      return await prisma.user.findUnique({
-        where: { id: userRaid.userId },
-      });
-    });
-
+  const allModes = Array.from(
     // eslint-disable-next-line no-undef
-    const userSet = new Set(users.map((user) => user.username));
+    new Set(userRaids.map((raid) => raid.raidMode))
+  );
 
-    // build string for users and day
-    const userArray = Array.from(userSet);
-    let userStringList = "";
-    userArray.forEach((user) => (userStringList += `> ${user} x${amount}\n`));
+  const allDays = Array.from(
+    // eslint-disable-next-line no-undef
+    new Set(userRaids.map((raid) => raid.when))
+  );
 
-    newString = stringBase + userStringList;
-  } else {
-    newString = stringBase + `> ${user} x${amount}\n`;
+  await forEach(allModes, async (mode) => {
+    let value = "";
+    await forEach(allDays, async (weekDay) => {
+      let formattedUserStringList = "";
+      const userRaids = await prisma.userRaid.findMany({
+        where: {
+          when: weekDay,
+          raidMode: mode,
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      const users = userRaids.map((userRaid) => ({
+        username: userRaid.user.username,
+        amount: userRaid.amount,
+      }));
+
+      if (users.length) {
+        // const modeString = `**${mode}**`;
+        const weekDayString = `__**${weekDay}**__:\n`;
+        users.forEach((user) => {
+          formattedUserStringList += `> ${user.username} x${user.amount}\n`;
+        });
+
+        value += weekDayString + formattedUserStringList + "\n";
+
+        // newEmbedFieldsObj = {
+        //   ...newEmbedFields,
+        //   name: modeString,
+        //   value,
+        // };
+        modeMap.set(mode, value);
+      }
+    });
+  });
+
+  const newEmbedFields = [];
+
+  for (const mode of modeMap.keys()) {
+    newEmbedFields.push(modeMap.get(mode));
   }
-  message.embeds[0].data.fields.find(
-    (f) => f.name === `__**${mode} Mode**__`
-  ).value = newString;
+
+  newEmbed.embed.data.fields = newEmbedFields;
 };
 
 export default updateFields;
