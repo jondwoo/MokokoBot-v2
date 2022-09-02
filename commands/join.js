@@ -53,6 +53,26 @@ export async function autocomplete(interaction) {
   }
 }
 
+// ideal template
+// const bossEmbed = new EmbedBuilder()
+//   .setColor(0x0099ff)
+//   .setTitle("**Valtan**")
+//   .addFields(
+//     {
+//       name: "__**Normal Mode**__",
+//       value:
+//         "**Sunday**:\n > rome\n > ema\n\n" +
+//         "**Monday**:\n > angie\n > tofu\n",
+//       inline: true,
+//     },
+//     {
+//       name: "__**Hard Mode**__",
+//       value: "**Friday**:\n > rome\n > ema\n > charlie",
+//       inline: true,
+//     }
+//   )
+//   .setImage("attachment://valtan.jpeg");
+
 export async function execute(interaction) {
   const channel = interaction.channel;
   const subCommand = interaction.options.getSubcommand();
