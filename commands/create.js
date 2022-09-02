@@ -4,7 +4,7 @@ import commands from "./data/create/raid.js";
 
 export const data = commands;
 
-export async function execute(interaction) {
+export async function execute(interaction, prisma) {
   const channel = interaction.channel;
   const subCommand = interaction.options.getSubcommand();
 
@@ -92,10 +92,26 @@ export async function execute(interaction) {
           break;
       }
 
-      channel.send({
+      const message = await channel.send({
         embeds: [bossEmbed],
         files,
       });
+
+      await prisma.embedMessage.upsert({
+        where: { raidName: boss },
+        update: {
+          msgId: message.id,
+          channelId: message.channelId,
+          createdAt: new Date().toISOString(),
+          raidName: boss,
+        },
+        create: {
+          msgId: message.id,
+          channelId: message.channelId,
+          raidName: boss,
+        },
+      });
+
       await interaction.reply({
         content: `Created ${boss} raid event`,
         ephemeral: true,
